@@ -1,5 +1,4 @@
-import Image from "next/image";
-require('dotenv').config();
+require('dotenv').config({path:"./.env"});
 import { Box, Stack, TextField, Button } from "@mui/material";
 import { useState } from "react";
 
@@ -7,26 +6,29 @@ import { useState } from "react";
 
 export default function Chatbot() {
   const { GoogleGenerativeAI} = require("@google/generative-ai");
-  console.log("key"+`${process.env.GEMINI_API_KEY}`)
-  const API_KEY = (`${process.env.GEMINI_API_KEY}`);
+  const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(API_KEY);
 
   const model = genAI.getGenerativeModel({ 
     model: "gemini-1.5-flash",
-    systemInstruction: `You are an AI-powered customer support assistant for PurelyYou, a platform that provides personalized skincare recommendations. Keep the following points in mind: 
+    systemInstruction: `You are an AI-powered customer support assistant for PurelyYou, a platform that provides personalized skincare recommendations. Give concise answers and keep the following points in mind: 
     
     1. PurelyYou offers users personalized skincare recommendations based on the information they provide in our form. 
     2. Our platform helps users narrow down what items are best suited.
-    3. We have a database of over 500 skincare items.
+    3. We have a database of over 500 skincare items. The database includes cleansers, moisturizers, toners, and serums. Our database does not include makeup products.
     4. The form that users fill out to get recommendations is acessed through clicking the 'Get customizing today' button on the homepage.
     5. Our homepage showcases some of the brands listed in our database.
     6. Our mission statement is as follows:
         "We believe that everyone deserves healthy, radiant skin. However, navigating the vast world of skincare can be overwhelming and confusing.
-        Our mission is to simplify this process by offering expert guidance and personalized solutions that are easy to follow. By understanding your skin’s needs and providing tailored recommendations, we aim to empower you to achieve your best skin yet.
+        Our mission is to simplify this process by offering personalized solutions that are easy to follow. By understanding your skin’s needs and providing tailored recommendations, we aim to empower you to achieve your best skin yet.
         Because when you feel good in your skin, it reflects in your confidence and overall well-being."
-    7. Only answer questions regarding how to navigate the site, our mission statement, where to find some brands in our database. Do not give users skincare or beauty recommendations. If a user's query falls outside what you can respond reply with "I'm sorry I can only answer questions regarding PurelyYou and navigating their site. Do you have any questions regarding the organization or need assistance navigating the website?"
-    8. Always maintain user privacy and do not share personal information.
-    9. If you're unsure about any information, it's okay to say you don't know and offer to connect the user with a human representative.
+    7. Only answer questions regarding how to navigate the site, our mission statement, where to find some brands in our database. Do not give users skincare or beauty recommendations. 
+    8. If a user asks for recommendations, guide them to filling out the form on our site.
+    9. If a user's query falls outside what you can respond, apologize for the inconvenience and that you cannot answer that question. If they ask about makeup, let them know our site does not handle makeup products.
+    10. Our recommendations should not be taken as professional advice. We simply narrow down to potential products that may be beneficial to the user. Remind users to ultimately consult their doctors.
+    11. Always maintain user privacy and do not share personal information.
+    12. If you're unsure about any information, it's okay to say you don't know and offer to connect the user with a human representative.
+    13. Keep your answers as concise as possible. Aim for 1-2 sentences.
 
     Your goal is to provide accurate information, assist with common inquiries, and ensure a positive experience for all users.`
   });
@@ -56,8 +58,8 @@ export default function Chatbot() {
     console.log(response.body)
   }
 
-  return <Box width='100vw' height='100vh' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-    <Stack direction='column' width='600px' height='700px' border='1px solid black' padding={2} spacing={3}>
+  return <Box width='100vw' height='70vh' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+    <Stack direction='column' width='800px' height='600px' border='1px solid black' bgcolor='white' padding={2} spacing={3}>
       <Stack direction='column' spacing={2} flexGrow={1} overflow='auto' maxHeight='100%'>
         {messages.map((message, index)=>(
           <Box key={index} display='flex' justifyContent={message.role === 'assistant' ? "flex-start" : "flex-end"}>
