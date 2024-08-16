@@ -1,6 +1,6 @@
 require('dotenv').config({path:"./.env"});
-import { Box, Stack, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { Box, Stack, TextField, Button, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 
 
 
@@ -44,22 +44,33 @@ export default function Chatbot() {
     setMessage('')
     setMessages((messages)=>[
       ...messages,
-      {role: 'user', content:userMessage}])
+      {role: 'user', content:userMessage},
+      {role: 'assistant', content:''}])
 
     console.log(userMessage)
     const result = await model.generateContent(userMessage)
     const response = await result.response
     const text = await response.text()
     setMessages((messages)=>[
-      ...messages,
+      ...(messages.slice(0,messages.length-1)),
       {role: 'assistant', content:text}
     ])
     console.log(result)
     console.log(response.body)
   }
 
+  const messagesEndRef = React.createRef()
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(()=>{
+    scrollToBottom(),[messages]
+  });
+
   return <Box width='100vw' height='70vh' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-    <Stack direction='column' width='800px' height='600px' border='1px solid black' bgcolor='white' padding={2} spacing={3}>
+    <Typography variant='h4' width='50%' display='flex' justifyContent='center' alignItems='center' bgcolor={'#E0BFB8'} border={'1px solid black'} color='#E30B5C'>Welcome to the PurelyYou Support Center</Typography>
+    <Stack direction='column' width='50%' height='600px' border='1px solid black' bgcolor='white' padding={2} spacing={3}>
       <Stack direction='column' spacing={2} flexGrow={1} overflow='auto' maxHeight='100%'>
         {messages.map((message, index)=>(
           <Box key={index} display='flex' justifyContent={message.role === 'assistant' ? "flex-start" : "flex-end"}>
@@ -68,6 +79,7 @@ export default function Chatbot() {
             </Box>
           </Box>
         ))}
+        <Box ref={messagesEndRef}/>
       </Stack>
       <Stack direction='row' spacing={2}>
         <TextField label='message' fullWidth value={message} onChange={(e) =>setMessage(e.target.value)}/>
